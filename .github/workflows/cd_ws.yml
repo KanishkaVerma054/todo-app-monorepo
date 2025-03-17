@@ -22,4 +22,11 @@ jobs:
            file: ./docker/Dockerfile.ws
            push: true
            tags: kanishka054/todo-app-ws:${{ github.sha }}
+       - name: Deploy to the vm
+         run: |
+             echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+             mkdir -p /home/runner/.ssh
+             ls /home/runner/.ssh
+             chmod 700 /home/runner/ssh_key
+             ssh -o StrictHostKeyChecking=no -i ~/ssh_key ubuntu@43.204.218.115 -t "docker run --name todo_ws -d -p 8080:8080 kanishka054/todo-app-ws:${{ github.sha }}" 
 
