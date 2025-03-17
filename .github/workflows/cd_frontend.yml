@@ -20,8 +20,15 @@ jobs:
          with:
            context: .
            file: ./docker/Dockerfile.frontend
-           build-args: |
-             DATABASE_URL=${{ secrets.DATABASE_URL }}
+          #  build-args: |
+          #    DATABASE_URL=${{ secrets.DATABASE_URL }}
            push: true
            tags: kanishka054/todo-app-frontend:${{ github.sha }}
+       - name: Deploy to the vm
+         run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+          mkdir -p /home/runner/.ssh
+          ls /home/runner/.ssh
+          chmod 700 /home/runner/ssh_key
+          ssh -o StrictHostKeyChecking=no -i ~/ssh_key ubuntu@13.235.24.208 -t "docker run --name todo_backend -d -p 8080:8080 kanishka054/todo-app-backend:${{ github.sha }}"
 
